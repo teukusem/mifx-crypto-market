@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "serve:prod": "npm run build && vite preview --host 127.0.0.1",
+    "serve:prod": "npm run build && node server.mjs",
+    "start": "node server.mjs",
     "preview": "vite preview"
   },
   "keywords": [],
