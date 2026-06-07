@@ -53,7 +53,7 @@ export function Otp() {
       });
 
       setOtpError('');
-      navigate('/home');
+      navigate('/market');
     } catch (error) {
       setOtpError(getOtpErrorMessage(error));
     }
@@ -78,14 +78,14 @@ export function Otp() {
       <form className="grid gap-3.5" noValidate onSubmit={handleSubmit}>
         {verifyOtpMutation.isPending ? (
           <div
-            className="grid grid-cols-6 gap-2 min-[561px]:grid-cols-[repeat(6,50px)] min-[561px]:gap-[13px]"
+            className="mx-auto grid grid-cols-[repeat(6,42px)] justify-center gap-2 min-[561px]:grid-cols-[repeat(6,50px)] min-[561px]:gap-[13px]"
             aria-busy="true"
             aria-label="Verifying OTP"
           >
             {Array.from({ length: 6 }).map((_, index) => (
               <Skeleton
                 key={index}
-                className="h-16 w-full rounded min-[561px]:h-[72px] min-[561px]:w-[50px]"
+                className="h-[60px] w-[42px] rounded min-[561px]:h-[72px] min-[561px]:w-[50px]"
               />
             ))}
           </div>
@@ -97,14 +97,14 @@ export function Otp() {
             setOtpCode(value);
             setOtpError('');
           }}
-          containerClassName="justify-center"
+          containerClassName="justify-center overflow-visible"
         >
-          <InputOTPGroup className="grid grid-cols-6 gap-2 min-[561px]:grid-cols-[repeat(6,50px)] min-[561px]:gap-[13px]">
+          <InputOTPGroup className="mx-auto grid grid-cols-[repeat(6,42px)] justify-center gap-2 min-[561px]:grid-cols-[repeat(6,50px)] min-[561px]:gap-[13px]">
             {Array.from({ length: 6 }).map((_, index) => (
               <InputOTPSlot
                 key={index}
                 index={index}
-                className="relative h-16 w-full rounded first:rounded last:rounded border border-input bg-background text-2xl font-bold text-primary shadow-none after:absolute after:bottom-[9px] after:left-[11px] after:right-[11px] after:h-0.5 after:bg-input after:content-[''] data-[active=true]:border-input data-[active=true]:ring-0 data-[active=true]:after:bg-primary aria-invalid:!border-destructive min-[561px]:h-[72px] min-[561px]:w-[50px] min-[561px]:text-[28px] [&:not(:empty)]:after:bg-primary"
+                className="relative h-[60px] w-[42px] rounded first:rounded last:rounded border border-input bg-background text-2xl font-bold text-primary shadow-none after:absolute after:bottom-[9px] after:left-[9px] after:right-[9px] after:h-0.5 after:bg-input after:content-[''] data-[active=true]:border-input data-[active=true]:ring-0 data-[active=true]:after:bg-primary aria-invalid:!border-destructive min-[561px]:h-[72px] min-[561px]:w-[50px] min-[561px]:text-[28px] min-[561px]:after:left-[11px] min-[561px]:after:right-[11px] [&:not(:empty)]:after:bg-primary"
                 aria-invalid={Boolean(otpError)}
               />
             ))}

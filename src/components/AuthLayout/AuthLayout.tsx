@@ -19,11 +19,13 @@ export function AuthLayout({
   return (
     <main className="relative min-h-screen overflow-hidden bg-white text-foreground">
       <section className="grid min-h-screen grid-cols-1 md:grid-cols-2">
-        <aside className="relative order-2 flex min-h-[360px] items-center justify-center overflow-hidden bg-secondary md:order-1 md:min-h-screen">
+        <aside className="relative order-2 hidden min-h-[360px] items-center justify-center overflow-hidden bg-secondary md:order-1 md:flex md:min-h-screen">
           <div className="constellation-bg" aria-hidden="true" />
           <img
             src={illustrationSrc}
             alt={illustrationAlt}
+            loading="lazy"
+            decoding="async"
             className="relative z-[1] mt-8 h-auto w-[min(560px,74%)] object-contain"
           />
         </aside>

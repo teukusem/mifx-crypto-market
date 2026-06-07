@@ -28,7 +28,7 @@ type LoginState = {
 };
 
 export const useLoginStore = create<LoginState>((set) => ({
-  mode: 'email',
+  mode: 'phone',
   selectedCountryCode: '',
   email: '',
   phoneNumber: '',

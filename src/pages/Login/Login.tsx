@@ -303,10 +303,12 @@ export function Login() {
               <Input
                 id="phoneNumber"
                 type="tel"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={phoneNumber}
                 disabled={countries.length === 0}
                 onChange={(event) => {
-                  setPhoneNumber(event.target.value);
+                  setPhoneNumber(event.target.value.replace(/\D/g, ''));
                   setHasStartedPhoneValidation(true);
                 }}
                 placeholder="Enter your number"

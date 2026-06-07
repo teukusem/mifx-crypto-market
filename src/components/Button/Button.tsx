@@ -1,7 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from 'react';
 import { type VariantProps } from 'class-variance-authority';
-import { Slot } from 'radix-ui';
 
 import { cn } from '@/utils/cn';
 import { buttonVariants } from './button.styles';
@@ -10,16 +9,11 @@ function Button({
   className,
   variant = 'default',
   size = 'default',
-  asChild = false,
   ...props
 }: React.ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-  }) {
-  const Comp = asChild ? Slot.Root : 'button';
-
+  VariantProps<typeof buttonVariants>) {
   return (
-    <Comp
+    <button
       data-slot="button"
       data-variant={variant}
       data-size={size}
