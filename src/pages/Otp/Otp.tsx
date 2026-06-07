@@ -1,31 +1,62 @@
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useVerifyOtpMutation } from '@/api/auth';
 import { Button } from '@/components/Button';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/InputOTP';
 import { AuthLayout } from '@/components/AuthLayout';
-import { getLoginCountryByCode } from '@/pages/Login/countries';
+import { Skeleton } from '@/components/Skeleton';
+import { getOtpErrorMessage } from '@/pages/Login/authErrors';
 import { useLoginStore } from '@/pages/Login/loginStore';
+import { otpSchema } from './otpSchema';
 
 export function Otp() {
-  const { mode, selectedCountryCode, phoneNumber } = useLoginStore();
+  const navigate = useNavigate();
+  const verifyOtpMutation = useVerifyOtpMutation();
+  const { mode, otpChallenge } = useLoginStore();
   const [otpCode, setOtpCode] = useState('');
   const [otpError, setOtpError] = useState('');
 
-  const selectedCountry = useMemo(
-    () => getLoginCountryByCode(selectedCountryCode),
-    [selectedCountryCode],
-  );
-  const otpRecipient =
-    mode === 'email' ? 'your registered phone' : `${selectedCountry.dialCode} ${phoneNumber.trim()}`;
+  useEffect(() => {
+    if (!otpChallenge) {
+      navigate('/login', { replace: true });
+    }
+  }, [navigate, otpChallenge]);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  if (!otpChallenge) {
+    return null;
+  }
+
+  const challenge = otpChallenge;
+
+  const otpRecipient =
+    mode === 'email' ? challenge.targetLabel || 'your registered phone' : challenge.targetLabel;
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (otpCode.length < 6) {
-      setOtpError('Enter the 6 digit code');
+    const result = otpSchema.safeParse({ code: otpCode });
+
+    if (!result.success) {
+      setOtpError(result.error.issues[0]?.message ?? 'Enter the 6 digit code');
       return;
     }
 
-    setOtpError('');
+    if (!challenge.phone) {
+      setOtpError('Phone number is missing');
+      return;
+    }
+
+    try {
+      await verifyOtpMutation.mutateAsync({
+        otp: otpCode,
+        phone: challenge.phone,
+      });
+
+      setOtpError('');
+      navigate('/home');
+    } catch (error) {
+      setOtpError(getOtpErrorMessage(error));
+    }
   }
 
   return (
@@ -45,6 +76,20 @@ export function Otp() {
       </div>
 
       <form className="grid gap-3.5" noValidate onSubmit={handleSubmit}>
+        {verifyOtpMutation.isPending ? (
+          <div
+            className="grid grid-cols-6 gap-2 min-[561px]:grid-cols-[repeat(6,50px)] min-[561px]:gap-[13px]"
+            aria-busy="true"
+            aria-label="Verifying OTP"
+          >
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Skeleton
+                key={index}
+                className="h-16 w-full rounded min-[561px]:h-[72px] min-[561px]:w-[50px]"
+              />
+            ))}
+          </div>
+        ) : (
         <InputOTP
           maxLength={6}
           value={otpCode}
@@ -65,6 +110,7 @@ export function Otp() {
             ))}
           </InputOTPGroup>
         </InputOTP>
+        )}
 
         {otpError ? (
           <p className="m-0 text-center text-[13px] font-normal text-destructive">{otpError}</p>
@@ -72,9 +118,10 @@ export function Otp() {
 
         <Button
           type="submit"
-          className="mt-7 h-[42px] min-h-[42px] w-full rounded bg-primary text-base font-bold text-primary-foreground shadow-none hover:bg-primary"
+          disabled={verifyOtpMutation.isPending}
+          className="mt-7 h-[42px] min-h-[42px] w-full rounded bg-primary text-base font-bold text-primary-foreground shadow-none hover:bg-primary disabled:opacity-70"
         >
-          Confirm
+          {verifyOtpMutation.isPending ? 'Loading...' : 'Confirm'}
         </Button>
       </form>
     </AuthLayout>

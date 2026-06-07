@@ -1,23 +1,19 @@
-export type LoginCountry = {
-  code: string;
-  name: string;
-  dialCode: string;
-  flag: string;
-};
+import type { Country } from '@/types/country';
 
-export const loginCountries: LoginCountry[] = [
-  { code: 'ID', name: 'Indonesia', dialCode: '+62', flag: '🇮🇩' },
-  { code: 'MY', name: 'Malaysia', dialCode: '+60', flag: '🇲🇾' },
-  { code: 'SG', name: 'Singapore', dialCode: '+65', flag: '🇸🇬' },
-  { code: 'AU', name: 'Australia', dialCode: '+61', flag: '🇦🇺' },
-  { code: 'US', name: 'United States', dialCode: '+1', flag: '🇺🇸' },
-  { code: 'GB', name: 'United Kingdom', dialCode: '+44', flag: '🇬🇧' },
-  { code: 'IN', name: 'India', dialCode: '+91', flag: '🇮🇳' },
-];
+export function getFlagEmoji(countryCode: string) {
+  return countryCode
+    .toUpperCase()
+    .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
+}
 
-export const defaultLoginCountry =
-  loginCountries.find((country) => country.code === 'US') ?? loginCountries[0];
+export function selectDefaultCountry(countries: readonly Country[]): Country | null {
+  if (countries.length === 0) {
+    return null;
+  }
 
-export function getLoginCountryByCode(code: string) {
-  return loginCountries.find((country) => country.code === code) ?? defaultLoginCountry;
+  return countries.find((country) => country.code === 'ID') ?? countries[0];
+}
+
+export function getCountryByCode(countries: readonly Country[], code: string): Country | null {
+  return countries.find((country) => country.code === code) ?? null;
 }
